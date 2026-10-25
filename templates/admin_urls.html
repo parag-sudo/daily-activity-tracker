@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReachAI Tracker — URL History</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f3f4f6;min-height:100vh}
+.topbar{background:#1e2a4a;color:#fff;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.topbar-title{font-size:16px;font-weight:700}
+.accent{color:#f7941d}
+.topbar-right a{color:#93a3d4;text-decoration:none;font-size:13px}
+.container{max-width:960px;margin:0 auto;padding:28px 20px}
+.back{color:#f7941d;text-decoration:none;font-size:13px;font-weight:600;display:inline-block;margin-bottom:16px}
+.page-title{font-size:20px;font-weight:700;color:#1e2a4a;margin-bottom:4px}
+.page-sub{font-size:13px;color:#6b7280;margin-bottom:20px}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.filters select,.filters input{padding:8px 12px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:13px;font-family:inherit;outline:none;background:#fff}
+.filters button{padding:8px 16px;background:#1e2a4a;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer}
+.count{font-size:13px;color:#6b7280;margin-left:auto}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;min-width:600px}
+th{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6b7280;padding:10px 14px;text-align:left;border-bottom:1px solid #e5e7eb;background:#f9fafb;white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.p-backlink{background:#fef3c7;color:#b45309}
+.p-blog{background:#dcfce7;color:#15803d}
+.p-facebook,.p-reddit{background:#ede9fe;color:#6d28d9}
+.p-youtube{background:#fee2e2;color:#b91c1c}
+.p-linkedin,.p-carousel{background:#dbeafe;color:#1d4ed8}
+.p-instagram{background:#fce7f3;color:#9d174d}
+.emp-ratul{background:#e0f2fe;color:#0369a1}
+.emp-debargha{background:#f0fdf4;color:#15803d}
+a.url-link{color:#f7941d;text-decoration:none;font-size:12px}
+a.url-link:hover{text-decoration:underline}
+.empty{text-align:center;padding:40px;color:#9ca3af;font-size:14px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title">Reach<span class="accent">AI</span> Tracker</div>
+  <div class="topbar-right"><a href="/admin">← Dashboard</a></div>
+</div>
+<div class="container">
+  <a class="back" href="/admin">← Back to Dashboard</a>
+  <div class="page-title">URL History</div>
+  <div class="page-sub">All backlinks, blog posts and social media URLs created over time.</div>
+
+  <form method="GET" class="filters">
+    <select name="emp">
+      <option value="">All employees</option>
+      {% for u, name in emp_names.items() if u != 'parag' %}
+      <option value="{{ u }}" {{ 'selected' if request.args.get('emp')==u else '' }}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <select name="type">
+      <option value="">All types</option>
+      <option value="Backlink" {{ 'selected' if request.args.get('type')=='Backlink' else '' }}>Backlinks</option>
+      <option value="Blog Post" {{ 'selected' if request.args.get('type')=='Blog Post' else '' }}>Blog Posts</option>
+      <option value="Facebook/Reddit" {{ 'selected' if request.args.get('type')=='Facebook/Reddit' else '' }}>Facebook/Reddit</option>
+      <option value="YouTube Video" {{ 'selected' if request.args.get('type')=='YouTube Video' else '' }}>YouTube</option>
+      <option value="Instagram Reel" {{ 'selected' if request.args.get('type')=='Instagram Reel' else '' }}>Instagram</option>
+      <option value="LinkedIn Carousel" {{ 'selected' if request.args.get('type')=='LinkedIn Carousel' else '' }}>LinkedIn</option>
+    </select>
+    <button type="submit">Filter</button>
+    <span class="count">{{ entries|length }} link(s)</span>
+  </form>
+
+  <div class="table-wrap">
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Employee</th>
+        <th>Type</th>
+        <th>URL</th>
+      </tr>
+      {% set f_emp = request.args.get('emp','') %}
+      {% set f_type = request.args.get('type','') %}
+      {% set filtered = entries %}
+      {% if f_emp %}{% set filtered = filtered | selectattr('username','eq',f_emp) | list %}{% endif %}
+      {% if f_type %}{% set filtered = filtered | selectattr('label','eq',f_type) | list %}{% endif %}
+      {% for e in filtered %}
+      <tr>
+        <td>{{ e.date }}</td>
+        <td><span class="pill emp-{{ e.username }}">{{ emp_names.get(e.username, e.username) }}</span></td>
+        <td>
+          {% set lc = e.label.lower() %}
+          <span class="pill p-{{ 'backlink' if 'backlink' in lc else ('blog' if 'blog' in lc else ('youtube' if 'youtube' in lc else ('instagram' if 'instagram' in lc else ('linkedin' if 'linkedin' in lc or 'carousel' in lc else 'facebook')))) }}">{{ e.label }}</span>
+        </td>
+        <td title="{{ e.url }}"><a class="url-link" href="{{ e.url }}" target="_blank">{{ e.url }}</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="empty">No URLs yet.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+</body>
+</html>

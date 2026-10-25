@@ -669,6 +669,48 @@ def _get_range_data(username, start_date, end_date):
     return result
 
 
+@app.route("/admin/urls")
+def admin_urls():
+    if "username" not in session or session["role"] != "admin":
+        return redirect(url_for("login"))
+    conn = get_db()
+    # URL-type tasks to show
+    URL_TASKS = {
+        "backlinks_built": "Backlinks",
+        "blog_url": "Blog Post",
+        "fb_reddit_urls": "Facebook/Reddit",
+        "youtube_url": "YouTube Video",
+        "li_connections": "LinkedIn Carousel",
+        "instagram_reel": "Instagram Reel",
+        "li_carousel": "LinkedIn Carousel",
+    }
+    rows = conn.execute("""
+        SELECT dl.username, dl.log_date, te.task_key,
+               te.value_url, te.value_text
+        FROM task_entries te
+        JOIN daily_logs dl ON te.log_id = dl.id
+        WHERE te.task_key IN ({})
+          AND (te.value_url IS NOT NULL AND te.value_url != ''
+               OR te.value_text IS NOT NULL AND te.value_text != '')
+        ORDER BY dl.log_date DESC, dl.username
+    """.format(','.join('?' * len(URL_TASKS))), list(URL_TASKS.keys())).fetchall()
+    conn.close()
+    entries = []
+    for r in rows:
+        if r["task_key"] == "backlinks_built" and r["value_text"]:
+            for url in r["value_text"].split('\n'):
+                url = url.strip()
+                if url:
+                    entries.append({"date": r["log_date"], "username": r["username"],
+                                    "label": "Backlink", "url": url})
+        elif r["value_url"]:
+            entries.append({"date": r["log_date"], "username": r["username"],
+                            "label": URL_TASKS.get(r["task_key"], r["task_key"]),
+                            "url": r["value_url"]})
+    return render_template("admin_urls.html", entries=entries,
+                           emp_names={u: USERS[u]["name"] for u in USERS})
+
+
 @app.route("/admin/weekly")
 def admin_weekly():
     if "username" not in session or session["role"] != "admin":

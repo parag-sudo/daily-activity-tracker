@@ -23,7 +23,7 @@ TASKS = {
         {"key": "contacts_uploaded",  "label": "Contacts Uploaded to ReachAI",   "type": "number", "target": 130, "unit": "contacts", "time": "9:15–9:30"},
         {"key": "replies_checked",    "label": "Email + WhatsApp Replies Checked","type": "boolean","target": 1,   "unit": "",         "time": "9:30–10:00"},
         {"key": "blog_url",           "label": "Blog Post Published",             "type": "url",    "target": 1,   "unit": "",         "time": "10:00–11:00"},
-        {"key": "backlinks_built",    "label": "Backlinks Built",                 "type": "number", "target": 5,   "unit": "backlinks","time": "11:00–12:00"},
+        {"key": "backlinks_built",    "label": "Backlinks Built",                 "type": "number", "target": 3,   "unit": "backlinks","time": "11:00–12:00"},
         {"key": "apollo_contacts",    "label": "Apollo.io Contacts Researched",   "type": "number", "target": 150, "unit": "contacts", "time": "2:00–3:00"},
         {"key": "eod_report",         "label": "EOD Report Submitted",            "type": "boolean","target": 1,   "unit": "",         "time": "5:00–6:00"},
         {"key": "eod_notes",          "label": "EOD Notes",                       "type": "text",   "target": 0,   "unit": "",         "time": "5:00–6:00"},
@@ -338,13 +338,26 @@ def update_task():
     task_type = data.get("type")
     now = datetime.now().isoformat()
 
+    # backlinks saves number + urls text together
+    if task_key == "backlinks_built" and task_type == "number":
+        task_type = "backlinks"
+
     conn = get_db()
     existing = conn.execute(
         "SELECT id FROM task_entries WHERE log_id=? AND task_key=?",
         (log_id, task_key)
     ).fetchone()
 
-    if task_type == "number":
+    if task_type == "backlinks":
+        val = int(data.get("value", 0))
+        urls_text = data.get("urls_text", "")
+        if existing:
+            conn.execute("UPDATE task_entries SET value_number=?, value_text=?, updated_at=? WHERE log_id=? AND task_key=?",
+                         (val, urls_text, now, log_id, task_key))
+        else:
+            conn.execute("INSERT INTO task_entries (log_id,task_key,value_number,value_text,updated_at) VALUES (?,?,?,?,?)",
+                         (log_id, task_key, val, urls_text, now))
+    elif task_type == "number":
         val = int(data.get("value", 0))
         if existing:
             conn.execute("UPDATE task_entries SET value_number=?, updated_at=? WHERE log_id=? AND task_key=?",

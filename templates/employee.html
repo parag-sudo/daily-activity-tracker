@@ -59,6 +59,11 @@ input:checked+.slider:before{transform:translateX(20px)}
 .toast{position:fixed;bottom:20px;right:20px;background:#1e2a4a;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
 .upload-area{margin-top:10px;border:1.5px dashed #e5e7eb;border-radius:7px;padding:10px 14px;background:#fafafa}
+.backlink-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.backlink-row input{flex:1;font-size:13px;padding:7px 10px;border:1.5px solid #e5e7eb;border-radius:6px;font-family:inherit;outline:none}
+.backlink-row input:focus{border-color:#f7941d}
+.remove-btn{background:none;border:none;color:#9ca3af;font-size:16px;cursor:pointer;padding:0 4px;line-height:1}
+.remove-btn:hover{color:#dc2626}
 .upload-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .upload-btn{font-size:12px;font-weight:600;padding:5px 12px;background:#1e2a4a;color:#fff;border:none;border-radius:5px;cursor:pointer;white-space:nowrap}
 .upload-btn:hover{background:#2d3f6e}
@@ -152,7 +157,16 @@ input[type=file]{display:none}
       oninput="saveTask('{{ task.key }}','text',this.value,'0')">{{ e.value_text or '' }}</textarea>
     {% endif %}
 
-    {% if upload_tasks.get(task.key) %}
+    {% if task.key == 'backlinks_built' %}
+    <div class="upload-area" style="margin-top:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <strong style="font-size:12px;color:#374151;">Paste Backlink URLs:</strong>
+        <button type="button" class="upload-btn" onclick="addBacklinkField()" {% if submitted %}disabled{% endif %}>+ Add URL</button>
+      </div>
+      <div id="backlink-fields"></div>
+      <div class="upload-status" id="ustatus-backlinks_built"></div>
+    </div>
+    {% elif upload_tasks.get(task.key) %}
     {% set ut = upload_tasks[task.key] %}
     <div class="upload-area">
       <div class="upload-row">
@@ -330,6 +344,58 @@ function reopenDay() {
     });
 }
 
+// Backlink URL fields
+function addBacklinkField(url) {
+  const container = document.getElementById('backlink-fields');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'backlink-row';
+  const input = document.createElement('input');
+  input.type = 'url';
+  input.placeholder = 'https://example.com/your-backlink';
+  input.value = url || '';
+  input.oninput = syncBacklinkCount;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'remove-btn';
+  btn.textContent = '✕';
+  btn.onclick = () => { row.remove(); syncBacklinkCount(); };
+  row.appendChild(input);
+  row.appendChild(btn);
+  container.appendChild(row);
+  input.focus();
+  syncBacklinkCount();
+}
+
+function syncBacklinkCount() {
+  const container = document.getElementById('backlink-fields');
+  if (!container) return;
+  const urls = Array.from(container.querySelectorAll('input')).map(i => i.value.trim()).filter(Boolean);
+  const numEl = document.getElementById('input-backlinks_built');
+  if (numEl) {
+    numEl.value = urls.length;
+    // save count + URLs together
+    clearTimeout(saveTimer['backlinks_built']);
+    saveTimer['backlinks_built'] = setTimeout(() => {
+      fetch('/update-task', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({key:'backlinks_built', type:'number', value: urls.length, urls_text: urls.join('\n')})
+      }).then(() => {
+        updateCard('backlinks_built', 'number', urls.length, 3);
+        updateOverall();
+      });
+    }, 600);
+  }
+  // store for mismatch — not applicable here since URLs define the count
+  uploadedCounts['backlinks_built'] = urls.length;
+  const statusEl = document.getElementById('ustatus-backlinks_built');
+  if (statusEl && urls.length > 0) {
+    statusEl.className = 'upload-status';
+    statusEl.textContent = `${urls.length} backlink URL${urls.length > 1 ? 's' : ''} added`;
+  }
+}
+
 // Init on load
 document.addEventListener('DOMContentLoaded', () => {
   TASKS.forEach(t => {
@@ -342,6 +408,13 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCard(t.key, t.type, val, t.target);
   });
   updateOverall();
+  // restore saved backlink URLs
+  const blEntry = ENTRIES['backlinks_built'] || {};
+  const savedUrls = (blEntry.value_text || '').split('\n').filter(Boolean);
+  savedUrls.forEach(u => addBacklinkField(u));
+  if (savedUrls.length === 0 && document.getElementById('backlink-fields')) {
+    addBacklinkField(); // start with one empty field
+  }
 });
 </script>
 </body>

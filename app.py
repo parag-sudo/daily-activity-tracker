@@ -442,40 +442,83 @@ def submit_day():
 def admin_dashboard():
     if "username" not in session or session["role"] != "admin":
         return redirect(url_for("login"))
-    today = date.today().isoformat()
-    employees = ["ratul", "debargha"]
-    data = {}
-    for emp in employees:
-        log, entries = get_log_data(emp, today)
-        tasks = TASKS.get(emp, [])
-        completed = 0
-        total = sum(1 for t in tasks if t["target"] > 0)
-        for t in tasks:
-            if t["target"] == 0:
-                continue
-            e = entries.get(t["key"])
-            if t["type"] == "number":
-                val = e["value_number"] if e and e["value_number"] else 0
-                if val >= t["target"]:
-                    completed += 1
-            elif t["type"] == "url":
-                val = e["value_url"] if e and e["value_url"] else ""
-                if val:
-                    completed += 1
-            elif t["type"] == "boolean":
-                val = e["value_bool"] if e and e["value_bool"] else 0
-                if val:
-                    completed += 1
-        data[emp] = {
-            "name": USERS[emp]["name"],
-            "log": log,
-            "entries": entries,
-            "tasks": tasks,
-            "completed": completed,
-            "total": total,
-            "pct": round(completed / total * 100) if total else 0
-        }
-    return render_template("admin.html", today=today, data=data)
+    emp = request.args.get("emp", "ratul")
+    period = request.args.get("period", "today")
+    today = date.today()
+
+    if period == "week":
+        start = today - timedelta(days=6)
+    elif period == "month":
+        start = today.replace(day=1)
+    else:
+        start = today
+
+    conn = get_db()
+    rows = conn.execute("""
+        SELECT dl.id, dl.log_date, dl.submitted,
+               te.task_key, te.value_number, te.value_bool, te.value_url, te.value_text
+        FROM daily_logs dl
+        LEFT JOIN task_entries te ON te.log_id = dl.id
+        WHERE dl.username=? AND dl.log_date BETWEEN ? AND ?
+        ORDER BY dl.log_date DESC
+    """, (emp, start.isoformat(), today.isoformat())).fetchall()
+
+    task_totals = {}
+    task_urls = {}
+    daily = {}
+    days_submitted = 0
+    days_seen = set()
+
+    for r in rows:
+        d = r["log_date"]
+        if d not in daily:
+            daily[d] = {"submitted": r["submitted"], "tasks": {}}
+            days_seen.add(d)
+            if r["submitted"]:
+                days_submitted += 1
+        if r["task_key"]:
+            daily[d]["tasks"][r["task_key"]] = {
+                "number": r["value_number"], "bool": r["value_bool"],
+                "url": r["value_url"], "text": r["value_text"]
+            }
+            if r["value_number"] is not None:
+                task_totals[r["task_key"]] = task_totals.get(r["task_key"], 0) + r["value_number"]
+            if r["value_url"]:
+                task_urls.setdefault(r["task_key"], []).append({"date": d, "url": r["value_url"]})
+            if r["task_key"] == "backlinks_built" and r["value_text"]:
+                for u in r["value_text"].split('\n'):
+                    u = u.strip()
+                    if u:
+                        task_urls.setdefault("backlinks_built", []).append({"date": d, "url": u})
+
+    contacts_rows = conn.execute("""
+        SELECT channel, account_used, COUNT(*) as cnt
+        FROM outreach_contacts
+        WHERE contacted_by=? AND contacted_date BETWEEN ? AND ?
+        GROUP BY channel, account_used ORDER BY cnt DESC
+    """, (emp, start.isoformat(), today.isoformat())).fetchall()
+    conn.close()
+
+    contacts_by_channel = {}
+    for c in contacts_rows:
+        ch = c["channel"]
+        contacts_by_channel.setdefault(ch, {"total": 0, "accounts": []})
+        contacts_by_channel[ch]["total"] += c["cnt"]
+        contacts_by_channel[ch]["accounts"].append({"name": c["account_used"], "cnt": c["cnt"]})
+
+    period_labels = {"today": "Today", "week": "Last 7 Days", "month": "This Month"}
+    return render_template("admin.html",
+        selected_emp=emp, selected_period=period,
+        period_label=period_labels[period],
+        today=today.isoformat(), start=start.isoformat(),
+        task_totals=task_totals, task_urls=task_urls,
+        contacts_by_channel=contacts_by_channel,
+        daily=daily, days_submitted=days_submitted,
+        days_logged=len(days_seen),
+        tasks=TASKS.get(emp, []),
+        emp_name=USERS[emp]["name"],
+        users=USERS,
+    )
 
 
 @app.route("/admin/history")

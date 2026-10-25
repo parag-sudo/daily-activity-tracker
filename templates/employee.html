@@ -65,6 +65,7 @@ input:checked+.slider:before{transform:translateX(20px)}
 select.acct-select{font-size:12px;padding:5px 8px;border:1.5px solid #e5e7eb;border-radius:5px;font-family:inherit;outline:none}
 .upload-status{font-size:12px;margin-top:6px;color:#059669;font-weight:500}
 .upload-status.err{color:#dc2626}
+.upload-status.warn{color:#b45309}
 input[type=file]{display:none}
 </style>
 </head>
@@ -115,7 +116,9 @@ input[type=file]{display:none}
         value="{{ e.value_number or 0 }}"
         placeholder="0"
         {% if submitted %}disabled{% endif %}
-        oninput="saveTask('{{ task.key }}','number',this.value,'{{ task.target }}')">
+        oninput="saveTask('{{ task.key }}','number',this.value,'{{ task.target }}'); checkMismatch('{{ task.key }}')"
+        onchange="checkMismatch('{{ task.key }}')"
+        >
       <span class="target-label">Target: {{ task.target }} {{ task.unit }}</span>
     </div>
     <div class="mini-bar-bg">
@@ -269,6 +272,20 @@ function submitDay() {
     });
 }
 
+const uploadedCounts = {};
+
+function checkMismatch(taskKey) {
+  const numEl = document.getElementById('input-' + taskKey);
+  if (!numEl || numEl.type !== 'number') return;
+  const entered = parseInt(numEl.value) || 0;
+  const uploaded = uploadedCounts[taskKey] || 0;
+  const statusEl = document.getElementById('ustatus-' + taskKey);
+  if (uploaded > 0 && entered !== uploaded) {
+    statusEl.className = 'upload-status warn';
+    statusEl.textContent = `⚠ Mismatch: you entered ${entered} but ${uploaded} contacts uploaded. Please correct the number.`;
+  }
+}
+
 function uploadContacts(taskKey) {
   const fileInput = document.getElementById('file-' + taskKey);
   const acctEl = document.getElementById('acct-' + taskKey);
@@ -290,8 +307,11 @@ function uploadContacts(taskKey) {
         statusEl.className = 'upload-status err';
         statusEl.textContent = '✗ ' + d.error;
       } else {
+        const total = d.inserted + (d.skipped || 0);
+        uploadedCounts[taskKey] = total;
         statusEl.className = 'upload-status';
-        statusEl.textContent = `✓ ${d.inserted} contacts saved${d.skipped ? ', ' + d.skipped + ' already contacted (skipped)' : ''}`;
+        statusEl.textContent = `✓ ${d.inserted} contacts saved${d.skipped ? ', ' + d.skipped + ' duplicates skipped' : ''}`;
+        checkMismatch(taskKey);
       }
       fileInput.value = '';
     })

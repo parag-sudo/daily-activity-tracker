@@ -59,7 +59,8 @@ def get_db():
 UPLOAD_TASKS = {
     "ratul": {
         "whatsapp_sent":       {"label": "WhatsApp Contacts",            "accounts": ["WhatsApp"]},
-        "contacts_uploaded":   {"label": "ReachAI Uploaded Contacts",    "accounts": ["ReachAI Email"]},
+        "contacts_uploaded":   {"label": "ReachAI Email Contacts",       "accounts": ["ReachAI Email"]},
+        "apollo_contacts":     {"label": "Apollo Researched Contacts",   "accounts": ["Apollo.io"]},
     },
     "debargha": {
         "li_connections": {"label": "LinkedIn Connection Contacts", "accounts": ["Parag LinkedIn", "Souranka LinkedIn"]},

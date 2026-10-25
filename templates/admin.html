@@ -223,11 +223,11 @@ a.url-pill:hover{text-decoration:underline}
     {% set req = namespace(n=0) %}
     {% for task in tasks %}
       {% if task.target > 0 and task.key != 'eod_notes' %}
-        {% set _ = req.__setattr__('n', req.n + 1) %}
+        {% set req.n = req.n + 1 %}
         {% set e = day_tasks.get(task.key) %}
-        {% if task.type == 'number' and e and e.number is not none and e.number >= task.target %}{% set _ = done.__setattr__('n', done.n + 1) %}{% endif %}
-        {% if task.type == 'url' and e and e.url %}{% set _ = done.__setattr__('n', done.n + 1) %}{% endif %}
-        {% if task.type == 'boolean' and e and e.bool %}{% set _ = done.__setattr__('n', done.n + 1) %}{% endif %}
+        {% if task.type == 'number' and e and e.number is not none and e.number >= task.target %}{% set done.n = done.n + 1 %}{% endif %}
+        {% if task.type == 'url' and e and e.url %}{% set done.n = done.n + 1 %}{% endif %}
+        {% if task.type == 'boolean' and e and e.bool %}{% set done.n = done.n + 1 %}{% endif %}
       {% endif %}
     {% endfor %}
     {% set dpct = (done.n / req.n * 100)|int if req.n else 0 %}

@@ -166,7 +166,7 @@ a.url-pill:hover{text-decoration:underline}
         <th>Links</th>
       </tr>
       {% for task in tasks %}
-      {% if task.key == 'eod_notes' %}{% continue %}{% endif %}
+      {% if task.key == 'eod_notes' %}{% else %}
       {% set total = task_totals.get(task.key, 0) %}
       {% set day_target = task.target %}
       {% set period_target = day_target * days_logged if selected_period != 'today' else day_target %}
@@ -209,6 +209,7 @@ a.url-pill:hover{text-decoration:underline}
           {% if urls|length > 3 %}<span style="font-size:11px;color:#9ca3af">+{{ urls|length - 3 }} more</span>{% endif %}
         </td>
       </tr>
+      {% endif %}
       {% endfor %}
     </table>
   </div>

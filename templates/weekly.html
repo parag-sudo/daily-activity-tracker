@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReachAI Tracker — Weekly Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f3f4f6;min-height:100vh}
+.topbar{background:#1e2a4a;color:#fff;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.topbar-title{font-size:16px;font-weight:700}
+.accent{color:#f7941d}
+.topbar-right a{color:#93a3d4;text-decoration:none;font-size:13px}
+.container{max-width:960px;margin:0 auto;padding:28px 20px}
+.back{color:#f7941d;text-decoration:none;font-size:13px;font-weight:600;display:inline-block;margin-bottom:16px}
+.page-title{font-size:20px;font-weight:700;color:#1e2a4a;margin-bottom:4px}
+.page-sub{font-size:13px;color:#6b7280;margin-bottom:24px}
+.emp-section{margin-bottom:32px}
+.emp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.emp-name{font-size:16px;font-weight:700;color:#1e2a4a}
+.stats-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.stat-box{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;flex:1;min-width:120px}
+.stat-val{font-size:22px;font-weight:700;color:#1e2a4a}
+.stat-label{font-size:11px;color:#6b7280;margin-top:2px}
+.stat-accent{color:#f7941d}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;margin-bottom:16px}
+th{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6b7280;padding:10px 14px;text-align:left;border-bottom:1px solid #e5e7eb;background:#f9fafb}
+td{padding:10px 14px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151}
+tr:last-child td{border-bottom:none}
+.pct-cell{font-weight:700}
+.bar-inline{display:flex;align-items:center;gap:8px}
+.bar-mini{height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;width:60px;flex-shrink:0}
+.bar-fill{height:100%;border-radius:99px}
+.green{background:#22c55e}.orange{background:#f7941d}.red{background:#ef4444}
+.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px}
+.b-yes{background:#dcfce7;color:#15803d}
+.b-no{background:#f3f4f6;color:#9ca3af}
+.section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin:16px 0 8px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title">Reach<span class="accent">AI</span> Tracker</div>
+  <div class="topbar-right"><a href="/admin">← Dashboard</a></div>
+</div>
+<div class="container">
+  <a class="back" href="/admin">← Back to Dashboard</a>
+  <div class="page-title">Weekly Report</div>
+  <div class="page-sub">{{ start }} to {{ end }}</div>
+
+  {% for emp, d in data.items() %}
+  <div class="emp-section">
+    <div class="emp-header">
+      <div class="emp-name">{{ d.name }}</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-val stat-accent">{{ d.avg_pct }}%</div>
+        <div class="stat-label">Avg Daily Completion</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">{{ d.days_submitted }}/7</div>
+        <div class="stat-label">Days Submitted</div>
+      </div>
+      {% for t in d.num_tasks %}
+      <div class="stat-box">
+        <div class="stat-val">{{ d.totals[t.key] }}</div>
+        <div class="stat-label">{{ t.label }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="section-label">Day-by-Day</div>
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Completion</th>
+        <th>Progress</th>
+        <th>Submitted</th>
+        {% for t in d.num_tasks %}<th>{{ t.label }}</th>{% endfor %}
+      </tr>
+      {% for date_str in date_range %}
+        {% set row = d.rows | selectattr('date','eq',date_str) | first | default(none) %}
+        <tr>
+          <td>{{ date_str }}</td>
+          {% if row %}
+            {% set cls = 'green' if row.pct >= 80 else ('orange' if row.pct >= 40 else 'red') %}
+            <td class="pct-cell">{{ row.completed }}/{{ row.total }} ({{ row.pct }}%)</td>
+            <td>
+              <div class="bar-inline">
+                <div class="bar-mini"><div class="bar-fill {{ cls }}" style="width:{{ row.pct }}%"></div></div>
+              </div>
+            </td>
+            <td><span class="badge {{ 'b-yes' if row.submitted else 'b-no' }}">{{ 'Yes' if row.submitted else 'No' }}</span></td>
+            {% for t in d.num_tasks %}
+            <td>{{ row.num_totals.get(t.key, 0) }} / {{ t.target }}</td>
+            {% endfor %}
+          {% else %}
+            <td colspan="{{ 3 + d.num_tasks|length }}" style="color:#d1d5db;">No data</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% endfor %}
+</div>
+</body>
+</html>

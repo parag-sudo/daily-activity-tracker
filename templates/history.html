@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReachAI Tracker — History</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f3f4f6;min-height:100vh}
+.topbar{background:#1e2a4a;color:#fff;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.topbar-title{font-size:16px;font-weight:700}
+.accent{color:#f7941d}
+.topbar-right a{color:#93a3d4;text-decoration:none;font-size:13px}
+.container{max-width:720px;margin:0 auto;padding:28px 20px}
+.back{color:#f7941d;text-decoration:none;font-size:13px;font-weight:600;display:inline-block;margin-bottom:16px}
+.back:hover{text-decoration:underline}
+.page-title{font-size:20px;font-weight:700;color:#1e2a4a;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb}
+th{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6b7280;padding:10px 16px;text-align:left;border-bottom:1px solid #e5e7eb;background:#f9fafb}
+td{padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151}
+tr:last-child td{border-bottom:none}
+.pct{font-weight:700;color:#1e2a4a}
+.bar-mini{height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;width:80px}
+.bar-fill{height:100%;border-radius:99px}
+.green{background:#22c55e}.orange{background:#f7941d}.red{background:#ef4444}
+.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px}
+.b-yes{background:#dcfce7;color:#15803d}
+.b-no{background:#f3f4f6;color:#9ca3af}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title">Reach<span class="accent">AI</span> Tracker</div>
+  <div class="topbar-right"><a href="/admin">← Dashboard</a></div>
+</div>
+<div class="container">
+  <a class="back" href="/admin">← Back to Dashboard</a>
+  <div class="page-title">{{ emp_name }} — Last 30 Days</div>
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Completion</th>
+      <th>Progress</th>
+      <th>Submitted</th>
+    </tr>
+    {% for h in history %}
+    {% set cls = 'green' if h.pct >= 80 else ('orange' if h.pct >= 40 else 'red') %}
+    <tr>
+      <td>{{ h.date }}</td>
+      <td class="pct">{{ h.completed }}/{{ h.total }} ({{ h.pct }}%)</td>
+      <td><div class="bar-mini"><div class="bar-fill {{ cls }}" style="width:{{ h.pct }}%"></div></div></td>
+      <td><span class="badge {{ 'b-yes' if h.submitted else 'b-no' }}">{{ 'Submitted' if h.submitted else 'Not submitted' }}</span></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:20px">No history yet</td></tr>
+    {% endfor %}
+  </table>
+</div>
+</body>
+</html>

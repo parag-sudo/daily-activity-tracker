@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReachAI Tracker — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0f1623;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#fff;border-radius:12px;padding:40px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.logo{text-align:center;margin-bottom:28px}
+.logo-title{font-size:22px;font-weight:700;color:#1e2a4a}
+.logo-sub{font-size:12px;color:#9ca3af;margin-top:3px}
+.accent{color:#f7941d}
+label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px}
+input{width:100%;padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:14px;font-family:inherit;outline:none;transition:border .15s}
+input:focus{border-color:#1e2a4a}
+.field{margin-bottom:16px}
+.btn{width:100%;padding:11px;background:#1e2a4a;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;transition:background .15s}
+.btn:hover{background:#2d3f6e}
+.error{background:#fef2f2;border:1px solid #fca5a5;color:#b91c1c;padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-title">Reach<span class="accent">AI</span> Tracker</div>
+    <div class="logo-sub">Daily Activity Management</div>
+  </div>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="POST">
+    <div class="field">
+      <label>Username</label>
+      <input type="text" name="username" placeholder="Enter username" autofocus>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Enter password">
+    </div>
+    <button type="submit" class="btn">Sign In</button>
+  </form>
+</div>
+</body>
+</html>

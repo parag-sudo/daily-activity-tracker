@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReachAI Tracker — Contact History</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f3f4f6;min-height:100vh}
+.topbar{background:#1e2a4a;color:#fff;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.topbar-title{font-size:16px;font-weight:700}
+.accent{color:#f7941d}
+.topbar-right{display:flex;gap:16px;align-items:center;font-size:13px}
+.topbar-right a{color:#93a3d4;text-decoration:none}
+.topbar-right a:hover{color:#fff}
+.container{max-width:1100px;margin:0 auto;padding:28px 20px}
+.page-title{font-size:20px;font-weight:700;color:#1e2a4a;margin-bottom:4px}
+.page-sub{font-size:13px;color:#6b7280;margin-bottom:20px}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.filters input[type=text]{padding:8px 12px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:13px;font-family:inherit;outline:none;min-width:220px}
+.filters input:focus{border-color:#f7941d}
+.filters select{padding:8px 12px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:13px;font-family:inherit;outline:none;background:#fff}
+.filters button{padding:8px 16px;background:#1e2a4a;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer}
+.count-label{font-size:13px;color:#6b7280;margin-left:auto}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;min-width:760px}
+th{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6b7280;padding:10px 14px;text-align:left;border-bottom:1px solid #e5e7eb;background:#f9fafb;white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.channel-pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.ch-whatsapp_sent{background:#dcfce7;color:#15803d}
+.ch-li_connections{background:#dbeafe;color:#1d4ed8}
+.ch-li_dms{background:#ede9fe;color:#6d28d9}
+.ch-insta_dms{background:#fce7f3;color:#9d174d}
+a.profile-link{color:#f7941d;text-decoration:none;font-size:12px}
+a.profile-link:hover{text-decoration:underline}
+.empty{text-align:center;padding:40px;color:#9ca3af;font-size:14px}
+.admin-tabs{display:flex;gap:8px;margin-bottom:16px}
+.admin-tab{padding:7px 16px;border-radius:7px;font-size:13px;font-weight:600;text-decoration:none;color:#374151;background:#fff;border:1.5px solid #e5e7eb}
+.admin-tab.active{background:#1e2a4a;color:#fff;border-color:#1e2a4a}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title">Reach<span class="accent">AI</span> Tracker</div>
+  <div class="topbar-right">
+    {% if is_admin %}
+    <a href="/admin">Dashboard</a>
+    {% else %}
+    <a href="/dashboard">My Tasks</a>
+    {% endif %}
+    <a href="/logout">Sign out</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="page-title">Contact History — {{ emp_name }}</div>
+  <div class="page-sub">All outreach contacts uploaded. Previously contacted people are flagged automatically on upload.</div>
+
+  {% if is_admin %}
+  <div class="admin-tabs">
+    <a class="admin-tab {{ 'active' if username=='ratul' else '' }}" href="/contacts?emp=ratul">Ratul</a>
+    <a class="admin-tab {{ 'active' if username=='debargha' else '' }}" href="/contacts?emp=debargha">Debargha</a>
+  </div>
+  {% endif %}
+
+  <form method="GET" class="filters">
+    {% if is_admin %}<input type="hidden" name="emp" value="{{ username }}">{% endif %}
+    <input type="text" name="q" value="{{ search }}" placeholder="Search name, business, email, URL…">
+    <select name="channel">
+      <option value="">All channels</option>
+      {% for ch in channels %}
+      <option value="{{ ch }}" {{ 'selected' if ch==selected_channel else '' }}>{{ ch }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Search</button>
+    <span class="count-label">{{ rows|length }} contact(s)</span>
+  </form>
+
+  <div class="table-wrap">
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Business</th>
+        <th>Category</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Channel</th>
+        <th>Account</th>
+        <th>Date</th>
+        <th>Profile</th>
+      </tr>
+      {% for r in rows %}
+      <tr>
+        <td title="{{ r.name }}">{{ r.name or '—' }}</td>
+        <td title="{{ r.business_name }}">{{ r.business_name or '—' }}</td>
+        <td title="{{ r.business_category }}">{{ r.business_category or '—' }}</td>
+        <td title="{{ r.email_id }}">{{ r.email_id or '—' }}</td>
+        <td>{{ r.phone_number or '—' }}</td>
+        <td><span class="channel-pill ch-{{ r.channel }}">{{ r.channel.replace('_',' ').title() }}</span></td>
+        <td title="{{ r.account_used }}">{{ r.account_used or '—' }}</td>
+        <td>{{ r.contacted_date }}</td>
+        <td>
+          {% if r.profile_url %}
+          <a class="profile-link" href="{{ r.profile_url }}" target="_blank">Open ↗</a>
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="9" class="empty">No contacts yet. Upload an Excel file from the task dashboard.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+</body>
+</html>

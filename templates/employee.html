@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReachAI Tracker — {{ name }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f3f4f6;min-height:100vh}
+.topbar{background:#1e2a4a;color:#fff;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.topbar-title{font-size:16px;font-weight:700}
+.accent{color:#f7941d}
+.topbar-right{display:flex;align-items:center;gap:16px;font-size:13px}
+.topbar-right a{color:#93a3d4;text-decoration:none}
+.topbar-right a:hover{color:#fff}
+.container{max-width:820px;margin:0 auto;padding:28px 20px}
+.date-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.date-label{font-size:13px;color:#6b7280}
+.date-val{font-size:15px;font-weight:600;color:#1e2a4a}
+.progress-header{background:#fff;border-radius:10px;padding:18px 20px;margin-bottom:20px;border:1px solid #e5e7eb}
+.ph-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.ph-label{font-size:13px;font-weight:600;color:#374151}
+.ph-pct{font-size:13px;font-weight:700;color:#1e2a4a}
+.bar-bg{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#f7941d,#e87b00);border-radius:99px;transition:width .4s}
+.section-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;margin:20px 0 10px}
+.task-card{background:#fff;border:1.5px solid #e5e7eb;border-radius:10px;padding:16px 18px;margin-bottom:10px;transition:border-color .15s}
+.task-card.done{border-color:#86efac}
+.task-card.missed{border-color:#fca5a5}
+.task-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.task-label{font-size:14px;font-weight:600;color:#1e2a4a}
+.task-time{font-size:11px;color:#9ca3af;margin-top:2px}
+.task-badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px}
+.badge-done{background:#dcfce7;color:#15803d}
+.badge-pending{background:#fef3c7;color:#b45309}
+.badge-missed{background:#fee2e2;color:#b91c1c}
+input[type=number],input[type=url],input[type=text],textarea{width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:14px;font-family:inherit;outline:none;transition:border .15s}
+input:focus,textarea:focus{border-color:#f7941d}
+textarea{resize:vertical;min-height:70px}
+.number-row{display:flex;align-items:center;gap:10px}
+.number-row input{flex:1}
+.target-label{font-size:12px;color:#6b7280;white-space:nowrap}
+.mini-bar-bg{height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;margin-top:6px}
+.mini-bar-fill{height:100%;background:#f7941d;border-radius:99px;transition:width .3s}
+.toggle-row{display:flex;align-items:center;gap:12px}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#e5e7eb;border-radius:99px;cursor:pointer;transition:.2s}
+.slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.slider{background:#1e2a4a}
+input:checked+.slider:before{transform:translateX(20px)}
+.toggle-label{font-size:13px;color:#374151}
+.submit-section{margin-top:28px;background:#fff;border-radius:10px;padding:20px;border:1px solid #e5e7eb;text-align:center}
+.submit-btn{background:#f7941d;color:#fff;border:none;padding:12px 36px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s}
+.submit-btn:hover{background:#e87b00}
+.submit-btn:disabled{background:#e5e7eb;color:#9ca3af;cursor:not-allowed}
+.submit-note{font-size:12px;color:#6b7280;margin-top:8px}
+.submitted-banner{background:#dcfce7;border:1px solid #86efac;color:#15803d;border-radius:8px;padding:14px;font-weight:600;font-size:14px;margin-top:16px}
+.toast{position:fixed;bottom:20px;right:20px;background:#1e2a4a;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+.upload-area{margin-top:10px;border:1.5px dashed #e5e7eb;border-radius:7px;padding:10px 14px;background:#fafafa}
+.upload-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.upload-btn{font-size:12px;font-weight:600;padding:5px 12px;background:#1e2a4a;color:#fff;border:none;border-radius:5px;cursor:pointer;white-space:nowrap}
+.upload-btn:hover{background:#2d3f6e}
+select.acct-select{font-size:12px;padding:5px 8px;border:1.5px solid #e5e7eb;border-radius:5px;font-family:inherit;outline:none}
+.upload-status{font-size:12px;margin-top:6px;color:#059669;font-weight:500}
+.upload-status.err{color:#dc2626}
+input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title">Reach<span class="accent">AI</span> Tracker</div>
+  <div class="topbar-right">
+    <span>{{ name }}</span>
+    <a href="/contacts">Contact History</a>
+    <a href="/logout">Sign out</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="date-bar">
+    <div>
+      <div class="date-label">Today's Activity Log</div>
+      <div class="date-val">{{ today }}</div>
+    </div>
+  </div>
+
+  <!-- Overall progress -->
+  <div class="progress-header">
+    <div class="ph-row">
+      <span class="ph-label">Today's Progress</span>
+      <span class="ph-pct" id="overall-pct">0%</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" id="overall-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="section-title">Tasks</div>
+
+  {% for task in tasks %}
+  <div class="task-card" id="card-{{ task.key }}">
+    <div class="task-top">
+      <div>
+        <div class="task-label">{{ task.label }}</div>
+        <div class="task-time">{{ task.time }}</div>
+      </div>
+      <span class="task-badge badge-pending" id="badge-{{ task.key }}">Pending</span>
+    </div>
+
+    {% set e = entries.get(task.key, {}) %}
+
+    {% if task.type == 'number' %}
+    <div class="number-row">
+      <input type="number" min="0" id="input-{{ task.key }}"
+        value="{{ e.value_number or 0 }}"
+        placeholder="0"
+        {% if submitted %}disabled{% endif %}
+        oninput="saveTask('{{ task.key }}','number',this.value,'{{ task.target }}')">
+      <span class="target-label">Target: {{ task.target }} {{ task.unit }}</span>
+    </div>
+    <div class="mini-bar-bg">
+      <div class="mini-bar-fill" id="mini-{{ task.key }}"
+        style="width:{{ [((e.value_number or 0)/task.target*100)|int, 100]|min if task.target else 0 }}%"></div>
+    </div>
+
+    {% elif task.type == 'url' %}
+    <input type="url" id="input-{{ task.key }}"
+      value="{{ e.value_url or '' }}"
+      placeholder="https://"
+      {% if submitted %}disabled{% endif %}
+      oninput="saveTask('{{ task.key }}','url',this.value,'{{ task.target }}')">
+
+    {% elif task.type == 'boolean' %}
+    <div class="toggle-row">
+      <label class="toggle">
+        <input type="checkbox" id="input-{{ task.key }}"
+          {{ 'checked' if e.value_bool else '' }}
+          {% if submitted %}disabled{% endif %}
+          onchange="saveTask('{{ task.key }}','boolean',this.checked,'{{ task.target }}')">
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label">Mark as completed</span>
+    </div>
+
+    {% elif task.type == 'text' %}
+    <textarea id="input-{{ task.key }}"
+      placeholder="Write your notes here..."
+      {% if submitted %}disabled{% endif %}
+      oninput="saveTask('{{ task.key }}','text',this.value,'0')">{{ e.value_text or '' }}</textarea>
+    {% endif %}
+
+    {% if upload_tasks.get(task.key) %}
+    {% set ut = upload_tasks[task.key] %}
+    <div class="upload-area">
+      <div class="upload-row">
+        <strong style="font-size:12px;color:#374151;">Upload {{ ut.label }}:</strong>
+        {% if ut.accounts|length > 1 %}
+        <select class="acct-select" id="acct-{{ task.key }}">
+          {% for acct in ut.accounts %}<option value="{{ acct }}">{{ acct }}</option>{% endfor %}
+        </select>
+        {% else %}
+        <span style="display:none" id="acct-{{ task.key }}">{{ ut.accounts[0] }}</span>
+        {% endif %}
+        <input type="file" id="file-{{ task.key }}" accept=".xlsx,.csv"
+               onchange="uploadContacts('{{ task.key }}')">
+        <button type="button" class="upload-btn"
+                onclick="document.getElementById('file-{{ task.key }}').click()">
+          ↑ Upload Excel / CSV
+        </button>
+      </div>
+      <div class="upload-status" id="ustatus-{{ task.key }}"></div>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <div class="submit-section">
+    {% if submitted %}
+    <div class="submitted-banner">✓ Day submitted successfully!</div>
+    <button class="submit-btn" style="margin-top:12px;background:#374151;" onclick="reopenDay()">Edit Submission</button>
+    <div class="submit-note" style="margin-top:6px;">Editing will reopen today's log. Parag will be notified again on re-submit.</div>
+    {% else %}
+    <button class="submit-btn" onclick="submitDay()">Submit Day</button>
+    <div class="submit-note">Parag will be notified of any missed tasks on submission.</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TASKS = {{ tasks | tojson }};
+const ENTRIES = {{ entries | tojson }};
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+let saveTimer = {};
+function saveTask(key, type, value, target) {
+  clearTimeout(saveTimer[key]);
+  saveTimer[key] = setTimeout(() => {
+    fetch('/update-task', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({key, type, value})
+    }).then(() => {
+      updateCard(key, type, value, parseInt(target));
+      updateOverall();
+      showToast('Saved');
+    });
+  }, 600);
+}
+
+function updateCard(key, type, value, target) {
+  const card = document.getElementById('card-' + key);
+  const badge = document.getElementById('badge-' + key);
+  let done = false;
+  if (type === 'number') {
+    const v = parseInt(value) || 0;
+    const pct = target ? Math.min(v / target * 100, 100) : 0;
+    const mini = document.getElementById('mini-' + key);
+    if (mini) mini.style.width = pct + '%';
+    done = v >= target;
+  } else if (type === 'url') {
+    done = value && value.startsWith('http');
+  } else if (type === 'boolean') {
+    done = !!value;
+  } else {
+    done = true;
+  }
+  if (done) {
+    card.className = 'task-card done';
+    badge.className = 'task-badge badge-done';
+    badge.textContent = 'Done';
+  } else if (target > 0) {
+    card.className = 'task-card';
+    badge.className = 'task-badge badge-pending';
+    badge.textContent = 'Pending';
+  }
+}
+
+function updateOverall() {
+  const required = TASKS.filter(t => t.target > 0);
+  let done = 0;
+  required.forEach(t => {
+    const el = document.getElementById('input-' + t.key);
+    if (!el) return;
+    if (t.type === 'number' && parseInt(el.value||0) >= t.target) done++;
+    else if (t.type === 'url' && el.value && el.value.startsWith('http')) done++;
+    else if (t.type === 'boolean' && el.checked) done++;
+  });
+  const pct = required.length ? Math.round(done / required.length * 100) : 0;
+  document.getElementById('overall-pct').textContent = pct + '%';
+  document.getElementById('overall-bar').style.width = pct + '%';
+}
+
+function submitDay() {
+  if (!confirm('Submit your day? Parag will be notified of any incomplete tasks.')) return;
+  fetch('/submit-day', {method:'POST'})
+    .then(r => r.json())
+    .then(d => {
+      if (d.status === 'submitted') {
+        location.reload();
+      }
+    });
+}
+
+function uploadContacts(taskKey) {
+  const fileInput = document.getElementById('file-' + taskKey);
+  const acctEl = document.getElementById('acct-' + taskKey);
+  const statusEl = document.getElementById('ustatus-' + taskKey);
+  const file = fileInput.files[0];
+  if (!file) return;
+  const account = acctEl ? (acctEl.value || acctEl.textContent) : '';
+  statusEl.className = 'upload-status';
+  statusEl.textContent = 'Uploading...';
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('task_key', taskKey);
+  fd.append('channel', taskKey);
+  fd.append('account_used', account);
+  fetch('/upload-contacts', {method:'POST', body: fd})
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) {
+        statusEl.className = 'upload-status err';
+        statusEl.textContent = '✗ ' + d.error;
+      } else {
+        statusEl.className = 'upload-status';
+        statusEl.textContent = `✓ ${d.inserted} contacts saved${d.skipped ? ', ' + d.skipped + ' already contacted (skipped)' : ''}`;
+      }
+      fileInput.value = '';
+    })
+    .catch(() => {
+      statusEl.className = 'upload-status err';
+      statusEl.textContent = '✗ Upload failed';
+    });
+}
+
+function reopenDay() {
+  if (!confirm('Reopen today\'s submission for editing?')) return;
+  fetch('/reopen-day', {method:'POST'})
+    .then(r => r.json())
+    .then(d => {
+      if (d.status === 'reopened') location.reload();
+    });
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', () => {
+  TASKS.forEach(t => {
+    const e = ENTRIES[t.key] || {};
+    let val;
+    if (t.type === 'number') val = e.value_number || 0;
+    else if (t.type === 'url') val = e.value_url || '';
+    else if (t.type === 'boolean') val = e.value_bool || 0;
+    else val = '';
+    updateCard(t.key, t.type, val, t.target);
+  });
+  updateOverall();
+});
+</script>
+</body>
+</html>

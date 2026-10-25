@@ -61,6 +61,7 @@ UPLOAD_TASKS = {
         "whatsapp_sent":       {"label": "WhatsApp Contacts",            "accounts": ["WhatsApp"]},
         "contacts_uploaded":   {"label": "ReachAI Email Contacts",       "accounts": ["ReachAI Email"]},
         "apollo_contacts":     {"label": "Apollo Researched Contacts",   "accounts": ["Apollo.io"]},
+        "backlinks_built":     {"label": "Backlinks",                    "accounts": ["Backlinks"]},
     },
     "debargha": {
         "li_connections": {"label": "LinkedIn Connection Contacts", "accounts": ["Parag LinkedIn", "Souranka LinkedIn"]},
@@ -76,7 +77,7 @@ COL_MAP = {
     "email_id": ["email","email id","email address","e-mail","work email","corporate email"],
     "business_name": ["business name","company","organization","firm","business","company name","employer","account name"],
     "business_category": ["business category","industry","category","sector","type","vertical","niche"],
-    "profile_url": ["profile url","linkedin url","instagram url","url","link","profile link","linkedin","person linkedin url","linkedin profile"],
+    "profile_url": ["profile url","linkedin url","instagram url","url","link","profile link","linkedin","person linkedin url","linkedin profile","backlink url","backlink","page url","website url"],
 }
 
 def _map_columns(headers):

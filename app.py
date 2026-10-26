@@ -24,9 +24,7 @@ TASKS = {
         {"key": "replies_checked",    "label": "Email + WhatsApp Replies Checked","type": "boolean","target": 1,   "unit": "",         "time": "9:30–10:00"},
         {"key": "blog_url",           "label": "Blog Post Published",             "type": "url",    "target": 1,   "unit": "",         "time": "10:00–11:00"},
         {"key": "backlinks_built",    "label": "Backlinks Built",                 "type": "number", "target": 3,   "unit": "backlinks","time": "11:00–12:00"},
-        {"key": "apollo_contacts",    "label": "Apollo.io Contacts Researched",   "type": "number", "target": 150, "unit": "contacts", "time": "2:00–3:00"},
-        {"key": "eod_report",         "label": "EOD Report Submitted",            "type": "boolean","target": 1,   "unit": "",         "time": "5:00–6:00"},
-        {"key": "eod_notes",          "label": "EOD Notes",                       "type": "text",   "target": 0,   "unit": "",         "time": "5:00–6:00"},
+        {"key": "apollo_contacts",    "label": "Apollo.io Contacts Researched and Uploaded", "type": "number", "target": 150, "unit": "contacts", "time": "2:00–3:00"},
     ],
     "debargha": [
         {"key": "linkedin_carousel",  "label": "LinkedIn Carousel Created",       "type": "url",    "target": 1,   "unit": "",         "time": "9:00–9:30"},

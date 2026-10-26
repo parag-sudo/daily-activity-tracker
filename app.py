@@ -19,12 +19,15 @@ ADMIN_EMAIL = "rahul.thinktoshare@gmail.com"
 # Task definitions per employee
 TASKS = {
     "ratul": [
-        {"key": "whatsapp_sent",      "label": "WhatsApp Messages Sent",         "type": "number", "target": 35,  "unit": "messages", "time": "12:00–12:30"},
-        {"key": "contacts_uploaded",  "label": "Contacts Uploaded to ReachAI",   "type": "number", "target": 130, "unit": "contacts", "time": "12:30–1:00"},
-        {"key": "replies_checked",    "label": "Email + WhatsApp Replies Checked","type": "boolean","target": 1,   "unit": "",         "time": "1:00–1:30"},
-        {"key": "blog_url",           "label": "Blog Post Published",             "type": "url",    "target": 1,   "unit": "",         "time": "1:30–3:00"},
-        {"key": "apollo_contacts",    "label": "Apollo.io Contacts Researched and Uploaded", "type": "number", "target": 150, "unit": "contacts", "time": "4:00–6:00"},
-        {"key": "backlinks_built",    "label": "Backlinks Built",                 "type": "number", "target": 3,   "unit": "backlinks","time": "6:00–8:00"},
+        {"key": "whatsapp_sent",        "label": "WhatsApp Messages Sent",                    "type": "number",  "target": 35,  "unit": "messages", "time": "12:00–12:15"},
+        {"key": "contacts_uploaded",    "label": "BNI Contacts Uploaded to ReachAI",           "type": "number",  "target": 130, "unit": "contacts", "time": "12:15–12:30"},
+        {"key": "replies_checked",      "label": "Email + WhatsApp Replies Checked",            "type": "boolean", "target": 1,   "unit": "",         "time": "12:30–1:00"},
+        {"key": "blog_url",             "label": "Getreached Blog Post Published",              "type": "url",     "target": 1,   "unit": "",         "time": "1:00–1:30"},
+        {"key": "apollo_contacts",      "label": "Apollo.io Contacts Researched and Uploaded",  "type": "number",  "target": 150, "unit": "contacts", "time": "1:30–2:00"},
+        {"key": "t2s_blog_url",         "label": "Think to Share Blog Post",                    "type": "url",     "target": 1,   "unit": "",         "time": "2:00–2:30"},
+        {"key": "getreached_seo_notes", "label": "Getreached On Page SEO and Research",         "type": "text",    "target": 0,   "unit": "",         "time": "2:30–3:00"},
+        {"key": "backlinks_built",      "label": "Backlinks for Getreached",                    "type": "number",  "target": 3,   "unit": "backlinks","time": "4:00–5:30"},
+        {"key": "video_uploads",        "label": "Video Uploads",                               "type": "url",     "target": 1,   "unit": "",         "time": "5:30–6:30"},
     ],
     "debargha": [
         {"key": "linkedin_carousel",  "label": "LinkedIn Carousel Created",       "type": "url",    "target": 1,   "unit": "",         "time": "9:00–9:30"},

@@ -36,10 +36,9 @@ TASKS = {
         {"key": "li_dms",             "label": "LinkedIn DMs Sent",               "type": "number", "target": 60,  "unit": "DMs",      "time": "11:00–12:00"},
         {"key": "messages_checked",   "label": "LinkedIn + Instagram Replies Checked","type": "boolean","target": 1,"unit": "",        "time": "12:00–12:30"},
         {"key": "insta_dms",          "label": "Instagram DMs Sent",              "type": "number", "target": 50,  "unit": "DMs",      "time": "2:00–3:00"},
-        {"key": "fb_reddit_posts",    "label": "Facebook / Reddit Posts",         "type": "number", "target": 2,   "unit": "posts",    "time": "3:00–3:30"},
-        {"key": "fb_reddit_urls",     "label": "Facebook / Reddit Post URLs",     "type": "url",    "target": 1,   "unit": "",         "time": "3:00–3:30"},
-        {"key": "youtube_url",        "label": "YouTube Video (weekly)",          "type": "url",    "target": 0,   "unit": "",         "time": "3:30–4:30"},
-        {"key": "eod_report",         "label": "EOD Report Submitted",            "type": "boolean","target": 1,   "unit": "",         "time": "5:30–6:00"},
+        {"key": "fb_reddit_posts",    "label": "Facebook Post",                   "type": "number", "target": 1,   "unit": "posts",    "time": "3:00–3:30"},
+        {"key": "fb_reddit_urls",     "label": "Facebook Post URL",               "type": "url",    "target": 1,   "unit": "",         "time": "3:00–3:30"},
+        {"key": "youtube_url",        "label": "YouTube Video",                   "type": "url",    "target": 1,   "unit": "",         "time": "3:30–4:30"},
         {"key": "eod_notes",          "label": "EOD Notes",                       "type": "text",   "target": 0,   "unit": "",         "time": "5:30–6:00"},
     ]
 }

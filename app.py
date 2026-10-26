@@ -19,12 +19,12 @@ ADMIN_EMAIL = "rahul.thinktoshare@gmail.com"
 # Task definitions per employee
 TASKS = {
     "ratul": [
-        {"key": "whatsapp_sent",      "label": "WhatsApp Messages Sent",         "type": "number", "target": 35,  "unit": "messages", "time": "9:00–9:15"},
-        {"key": "contacts_uploaded",  "label": "Contacts Uploaded to ReachAI",   "type": "number", "target": 130, "unit": "contacts", "time": "9:15–9:30"},
-        {"key": "replies_checked",    "label": "Email + WhatsApp Replies Checked","type": "boolean","target": 1,   "unit": "",         "time": "9:30–10:00"},
-        {"key": "blog_url",           "label": "Blog Post Published",             "type": "url",    "target": 1,   "unit": "",         "time": "10:00–11:00"},
-        {"key": "backlinks_built",    "label": "Backlinks Built",                 "type": "number", "target": 3,   "unit": "backlinks","time": "11:00–12:00"},
-        {"key": "apollo_contacts",    "label": "Apollo.io Contacts Researched and Uploaded", "type": "number", "target": 150, "unit": "contacts", "time": "2:00–3:00"},
+        {"key": "whatsapp_sent",      "label": "WhatsApp Messages Sent",         "type": "number", "target": 35,  "unit": "messages", "time": "12:00–12:30"},
+        {"key": "contacts_uploaded",  "label": "Contacts Uploaded to ReachAI",   "type": "number", "target": 130, "unit": "contacts", "time": "12:30–1:00"},
+        {"key": "replies_checked",    "label": "Email + WhatsApp Replies Checked","type": "boolean","target": 1,   "unit": "",         "time": "1:00–1:30"},
+        {"key": "blog_url",           "label": "Blog Post Published",             "type": "url",    "target": 1,   "unit": "",         "time": "1:30–3:00"},
+        {"key": "apollo_contacts",    "label": "Apollo.io Contacts Researched and Uploaded", "type": "number", "target": 150, "unit": "contacts", "time": "4:00–6:00"},
+        {"key": "backlinks_built",    "label": "Backlinks Built",                 "type": "number", "target": 3,   "unit": "backlinks","time": "6:00–8:00"},
     ],
     "debargha": [
         {"key": "linkedin_carousel",  "label": "LinkedIn Carousel Created",       "type": "url",    "target": 1,   "unit": "",         "time": "9:00–9:30"},

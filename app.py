@@ -67,7 +67,7 @@ UPLOAD_TASKS = {
     "debargha": {
         "li_connections": {"label": "LinkedIn Connection Contacts", "accounts": ["Parag LinkedIn", "Souranka LinkedIn"]},
         "li_dms":         {"label": "LinkedIn DM Contacts",         "accounts": ["Parag LinkedIn", "Souranka LinkedIn"]},
-        "insta_dms":      {"label": "Instagram DM Contacts",        "accounts": ["Instagram Profile 1", "Instagram Profile 2"]},
+        "insta_dms":      {"label": "Instagram DM Contacts",        "accounts": ["build_with_parag", "paragnandybni"]},
     }
 }
 

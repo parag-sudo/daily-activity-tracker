@@ -498,6 +498,13 @@ def admin_dashboard():
         WHERE contacted_by=? AND contacted_date BETWEEN ? AND ?
         GROUP BY channel, account_used ORDER BY cnt DESC
     """, (emp, start.isoformat(), today.isoformat())).fetchall()
+
+    upload_actual_rows = conn.execute("""
+        SELECT channel, COUNT(*) as cnt
+        FROM outreach_contacts
+        WHERE contacted_by=? AND contacted_date BETWEEN ? AND ?
+        GROUP BY channel
+    """, (emp, start.isoformat(), today.isoformat())).fetchall()
     conn.close()
 
     contacts_by_channel = {}
@@ -507,6 +514,8 @@ def admin_dashboard():
         contacts_by_channel[ch]["total"] += c["cnt"]
         contacts_by_channel[ch]["accounts"].append({"name": c["account_used"], "cnt": c["cnt"]})
 
+    upload_actuals = {r["channel"]: r["cnt"] for r in upload_actual_rows}
+
     period_labels = {"today": "Today", "week": "Last 7 Days", "month": "This Month"}
     return render_template("admin.html",
         selected_emp=emp, selected_period=period,
@@ -514,6 +523,7 @@ def admin_dashboard():
         today=today.isoformat(), start=start.isoformat(),
         task_totals=task_totals, task_urls=task_urls,
         contacts_by_channel=contacts_by_channel,
+        upload_actuals=upload_actuals,
         daily=daily, days_submitted=days_submitted,
         days_logged=len(days_seen),
         tasks=TASKS.get(emp, []),

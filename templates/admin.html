@@ -159,7 +159,8 @@ a.url-pill:hover{text-decoration:underline}
       <tr>
         <th>Task</th>
         <th>Time Slot</th>
-        <th>Total</th>
+        <th>Entered</th>
+        <th>Uploaded</th>
         <th>Target</th>
         <th>Progress</th>
         <th>Status</th>
@@ -168,18 +169,39 @@ a.url-pill:hover{text-decoration:underline}
       {% for task in tasks %}
       {% if task.key == 'eod_notes' %}{% else %}
       {% set total = task_totals.get(task.key, 0) %}
+      {% set actual = upload_actuals.get(task.key, -1) %}
       {% set day_target = task.target %}
       {% set period_target = day_target * days_logged if selected_period != 'today' else day_target %}
       {% set pct = [(total / period_target * 100)|int, 100]|min if period_target else 0 %}
       {% set bar_cls = 'green' if pct >= 80 else ('orange-bg' if pct >= 40 else 'red') %}
       {% set urls = task_urls.get(task.key, []) %}
+      {% set has_mismatch = (actual >= 0 and actual != total) %}
       <tr>
         <td style="font-weight:600;color:#1e2a4a">{{ task.label }}</td>
         <td style="color:#9ca3af;font-size:11px">{{ task.time }}</td>
         <td>
-          {% if task.type == 'number' %}{{ total }}
+          {% if task.type == 'number' %}
+            {{ total }}
+            {% if has_mismatch %}<br><span style="font-size:11px;color:#b45309">⚠ entered {{ total }}</span>{% endif %}
           {% elif task.type == 'boolean' %}{{ total }} day(s)
           {% elif task.type == 'url' %}{{ urls|length }} post(s)
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if actual >= 0 %}
+            {{ actual }}
+            {% if has_mismatch %}
+              <br><span style="font-size:11px;color:#b91c1c;font-weight:600;">
+                {% if actual < total %}↓ {{ total - actual }} less than entered{% else %}↑ {{ actual - total }} more than entered{% endif %}
+              </span>
+              {% if period_target > 0 and actual < period_target %}
+                <br><span style="font-size:11px;color:#ef4444;font-weight:700;">{{ period_target - actual }} short of target</span>
+              {% endif %}
+            {% else %}
+              {% if period_target > 0 and actual < period_target %}
+                <br><span style="font-size:11px;color:#ef4444;font-weight:700;">{{ period_target - actual }} short of target</span>
+              {% endif %}
+            {% endif %}
           {% else %}—{% endif %}
         </td>
         <td style="color:#6b7280">

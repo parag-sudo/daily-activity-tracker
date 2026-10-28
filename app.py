@@ -65,6 +65,7 @@ UPLOAD_TASKS = {
         "backlinks_built":     {"label": "Backlinks",                    "accounts": ["Backlinks"]},
     },
     "debargha": {
+        "li_sales_nav":  {"label": "Sales Navigator DM Contacts",   "accounts": ["Parag LinkedIn", "Souranka LinkedIn"]},
         "li_connections": {"label": "LinkedIn Connection Contacts", "accounts": ["Parag LinkedIn", "Souranka LinkedIn"]},
         "li_dms":         {"label": "LinkedIn DM Contacts",         "accounts": ["Parag LinkedIn", "Souranka LinkedIn"]},
         "insta_dms":      {"label": "Instagram DM Contacts",        "accounts": ["build_with_parag", "paragnandybni"]},

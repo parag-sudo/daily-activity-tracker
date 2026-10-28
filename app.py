@@ -644,16 +644,24 @@ def upload_contacts():
 def contacts_history():
     if "username" not in session:
         return redirect(url_for("login"))
-    username = session["username"] if session["role"] == "employee" else request.args.get("emp", "ratul")
+    is_admin = session["role"] == "admin"
+    if session["role"] == "employee":
+        username = session["username"]
+    else:
+        username = request.args.get("emp", "all")
     channel = request.args.get("channel", "")
     search = request.args.get("q", "").strip().lower()
     conn = get_db()
-    query = "SELECT * FROM outreach_contacts WHERE contacted_by=?"
-    params = [username]
+    if is_admin and username == "all":
+        query = "SELECT * FROM outreach_contacts WHERE 1=1"
+        params = []
+    else:
+        query = "SELECT * FROM outreach_contacts WHERE contacted_by=?"
+        params = [username]
     if channel:
         query += " AND channel=?"
         params.append(channel)
-    query += " ORDER BY contacted_date DESC, id DESC LIMIT 500"
+    query += " ORDER BY contacted_date DESC, id DESC LIMIT 1000"
     rows = conn.execute(query, params).fetchall()
     conn.close()
 
@@ -664,8 +672,7 @@ def contacts_history():
                 or search in (r["profile_url"] or "").lower()]
 
     channels = list(set(r["channel"] for r in rows)) if rows else []
-    is_admin = session["role"] == "admin"
-    emp_name = USERS.get(username, {}).get("name", username)
+    emp_name = "All Employees" if (is_admin and username == "all") else USERS.get(username, {}).get("name", username)
     upload_tasks = UPLOAD_TASKS.get(username, {})
     return render_template("contacts.html",
         rows=rows, channels=channels, selected_channel=channel,

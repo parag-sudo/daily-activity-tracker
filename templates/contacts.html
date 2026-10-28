@@ -60,6 +60,7 @@ a.profile-link:hover{text-decoration:underline}
 
   {% if is_admin %}
   <div class="admin-tabs">
+    <a class="admin-tab {{ 'active' if username=='all' else '' }}" href="/contacts?emp=all">All Employees</a>
     <a class="admin-tab {{ 'active' if username=='ratul' else '' }}" href="/contacts?emp=ratul">Ratul</a>
     <a class="admin-tab {{ 'active' if username=='debargha' else '' }}" href="/contacts?emp=debargha">Debargha</a>
   </div>
@@ -81,6 +82,7 @@ a.profile-link:hover{text-decoration:underline}
   <div class="table-wrap">
     <table>
       <tr>
+        {% if is_admin and username == 'all' %}<th>Employee</th>{% endif %}
         <th>Name</th>
         <th>Business</th>
         <th>Category</th>
@@ -93,6 +95,9 @@ a.profile-link:hover{text-decoration:underline}
       </tr>
       {% for r in rows %}
       <tr>
+        {% if is_admin and username == 'all' %}
+        <td style="font-weight:600;color:#1e2a4a;font-size:12px">{{ r.contacted_by.title() }}</td>
+        {% endif %}
         <td title="{{ r.name }}">{{ r.name or '—' }}</td>
         <td title="{{ r.business_name }}">{{ r.business_name or '—' }}</td>
         <td title="{{ r.business_category }}">{{ r.business_category or '—' }}</td>
@@ -108,7 +113,7 @@ a.profile-link:hover{text-decoration:underline}
         </td>
       </tr>
       {% else %}
-      <tr><td colspan="9" class="empty">No contacts yet. Upload an Excel file from the task dashboard.</td></tr>
+      <tr><td colspan="10" class="empty">No contacts yet.</td></tr>
       {% endfor %}
     </table>
   </div>

@@ -179,10 +179,16 @@ input[type=file]{display:none}
         <span style="display:none" id="acct-{{ task.key }}">{{ ut.accounts[0] }}</span>
         {% endif %}
         <input type="file" id="file-{{ task.key }}" accept=".xlsx,.csv"
-               onchange="uploadContacts('{{ task.key }}')">
+               onchange="showFileName('{{ task.key }}')">
         <button type="button" class="upload-btn"
                 onclick="document.getElementById('file-{{ task.key }}').click()">
-          ↑ Upload Excel / CSV
+          ↑ Choose File
+        </button>
+        <span id="fname-{{ task.key }}" style="font-size:12px;color:#6b7280;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span>
+        <button type="button" class="upload-btn" id="submit-{{ task.key }}"
+                style="display:none;background:#22c55e;"
+                onclick="uploadContacts('{{ task.key }}')">
+          ✓ Submit
         </button>
       </div>
       <div class="upload-status" id="ustatus-{{ task.key }}"></div>
@@ -300,6 +306,16 @@ function checkMismatch(taskKey) {
   }
 }
 
+function showFileName(taskKey) {
+  const fi = document.getElementById('file-' + taskKey);
+  const fn = document.getElementById('fname-' + taskKey);
+  const sb = document.getElementById('submit-' + taskKey);
+  if (fi.files[0]) {
+    fn.textContent = fi.files[0].name;
+    if (sb) sb.style.display = 'inline-block';
+  }
+}
+
 function uploadContacts(taskKey) {
   const fileInput = document.getElementById('file-' + taskKey);
   const acctEl = document.getElementById('acct-' + taskKey);
@@ -328,6 +344,10 @@ function uploadContacts(taskKey) {
         checkMismatch(taskKey);
       }
       fileInput.value = '';
+      const sb = document.getElementById('submit-' + taskKey);
+      const fn = document.getElementById('fname-' + taskKey);
+      if (sb) sb.style.display = 'none';
+      if (fn) fn.textContent = '';
     })
     .catch(() => {
       statusEl.className = 'upload-status err';

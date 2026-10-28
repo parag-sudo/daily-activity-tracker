@@ -32,7 +32,7 @@ TASKS = {
     "debargha": [
         {"key": "linkedin_carousel",  "label": "LinkedIn Carousel Created",       "type": "url",    "target": 1,   "unit": "",         "time": "9:00–9:30"},
         {"key": "instagram_reel",     "label": "Instagram Reel Created",          "type": "url",    "target": 1,   "unit": "",         "time": "9:30–10:30"},
-        {"key": "li_sales_nav",       "label": "LinkedIn Sales Navigator Researched","type": "number","target": 40, "unit": "contacts", "time": "10:30–11:00"},
+        {"key": "li_sales_nav",       "label": "LinkedIn Sales Navigator DMs",      "type": "number","target": 40, "unit": "contacts", "time": "10:30–11:00"},
         {"key": "li_connections",     "label": "LinkedIn Connection Requests Sent","type": "number", "target": 50,  "unit": "requests", "time": "11:00–12:00"},
         {"key": "li_dms",             "label": "LinkedIn DMs Sent",               "type": "number", "target": 60,  "unit": "DMs",      "time": "11:00–12:00"},
         {"key": "messages_checked",   "label": "LinkedIn + Instagram Replies Checked","type": "boolean","target": 1,"unit": "",        "time": "12:00–12:30"},

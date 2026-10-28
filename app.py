@@ -79,7 +79,7 @@ COL_MAP = {
     "email_id": ["email","email id","email address","e-mail","work email","corporate email"],
     "business_name": ["business name","company","organization","firm","business","company name","employer","account name"],
     "business_category": ["business category","industry","category","sector","type","vertical","niche"],
-    "profile_url": ["profile url","linkedin url","instagram url","url","link","profile link","linkedin","person linkedin url","linkedin profile","backlink url","backlink","page url","website url"],
+    "profile_url": ["profile url","linkedin url","instagram url","url","link","profile link","linkedin","person linkedin url","linkedin profile","backlink url","backlink","page url","website url","linkedin profile url","linkedin profile link","public profile url","connection url","instagram profile","instagram profile url","instagram link","social url","social profile","profile","member url","contact url","sales nav url","sales navigator url"],
 }
 
 def _map_columns(headers):

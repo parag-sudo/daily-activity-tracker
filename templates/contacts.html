@@ -106,9 +106,16 @@ a.profile-link:hover{text-decoration:underline}
         <td><span class="channel-pill ch-{{ r.channel }}">{{ r.channel.replace('_',' ').title() }}</span></td>
         <td title="{{ r.account_used }}">{{ r.account_used or '—' }}</td>
         <td>{{ r.contacted_date }}</td>
-        <td>
+        <td style="max-width:220px;">
           {% if r.profile_url %}
-          <a class="profile-link" href="{{ r.profile_url }}" target="_blank">Open ↗</a>
+          <a class="profile-link" href="{{ r.profile_url }}" target="_blank"
+             title="{{ r.profile_url }}"
+             style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;">
+            {% if 'linkedin' in r.profile_url %}🔗 LinkedIn
+            {% elif 'instagram' in r.profile_url %}📷 Instagram
+            {% elif 'facebook' in r.profile_url %}📘 Facebook
+            {% else %}🌐 {{ r.profile_url[:40] }}…{% endif %}
+            ↗</a>
           {% else %}—{% endif %}
         </td>
       </tr>

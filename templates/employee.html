@@ -296,7 +296,7 @@ function checkMismatch(taskKey) {
   const statusEl = document.getElementById('ustatus-' + taskKey);
   if (uploaded > 0 && entered !== uploaded) {
     statusEl.className = 'upload-status warn';
-    statusEl.textContent = `⚠ Mismatch: you entered ${entered} but ${uploaded} contacts uploaded. Please correct the number.`;
+    statusEl.textContent = `⚠ Note: you entered ${entered} but file has ${uploaded} contacts. File uploaded successfully — please update the number above to match.`;
   }
 }
 

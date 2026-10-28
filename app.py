@@ -635,9 +635,19 @@ def upload_contacts():
              username, today, log_id, now)
         )
         inserted += 1
+    # auto-save total uploaded count to task_entries so admin sees it without manual input
+    total_uploaded = conn.execute(
+        "SELECT COUNT(*) FROM outreach_contacts WHERE contacted_by=? AND channel=? AND contacted_date=?",
+        (username, channel, today)
+    ).fetchone()[0]
+    conn.execute("""
+        INSERT INTO task_entries (log_id, task_key, value_number)
+        VALUES (?, ?, ?)
+        ON CONFLICT(log_id, task_key) DO UPDATE SET value_number=excluded.value_number
+    """, (log_id, task_key, total_uploaded))
     conn.commit()
     conn.close()
-    return jsonify({"status": "ok", "inserted": inserted, "skipped": skipped, "total": len(contacts)})
+    return jsonify({"status": "ok", "inserted": inserted, "skipped": skipped, "total": len(contacts), "auto_count": total_uploaded})
 
 
 @app.route("/contacts")

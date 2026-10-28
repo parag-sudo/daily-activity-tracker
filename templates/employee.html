@@ -116,6 +116,18 @@ input[type=file]{display:none}
     {% set e = entries.get(task.key, {}) %}
 
     {% if task.type == 'number' %}
+    {% if task.key in upload_tasks %}
+    {# upload task — count auto-set from file, no manual input #}
+    <div class="number-row">
+      <span id="input-{{ task.key }}-display" style="font-size:22px;font-weight:700;color:#1e2a4a;">{{ e.value_number or 0 }}</span>
+      <input type="hidden" id="input-{{ task.key }}" value="{{ e.value_number or 0 }}">
+      <span class="target-label">Target: {{ task.target }} {{ task.unit }} &nbsp;·&nbsp; Auto-tracked from upload</span>
+    </div>
+    <div class="mini-bar-bg">
+      <div class="mini-bar-fill" id="mini-{{ task.key }}"
+        style="width:{{ [((e.value_number or 0)/task.target*100)|int, 100]|min if task.target else 0 }}%"></div>
+    </div>
+    {% else %}
     <div class="number-row">
       <input type="number" min="0" id="input-{{ task.key }}"
         value="{{ e.value_number or 0 }}"
@@ -130,6 +142,7 @@ input[type=file]{display:none}
       <div class="mini-bar-fill" id="mini-{{ task.key }}"
         style="width:{{ [((e.value_number or 0)/task.target*100)|int, 100]|min if task.target else 0 }}%"></div>
     </div>
+    {% endif %}
 
     {% elif task.type == 'url' %}
     <input type="url" id="input-{{ task.key }}"
@@ -340,7 +353,8 @@ function uploadContacts(taskKey) {
         const total = d.inserted + (d.skipped || 0);
         uploadedCounts[taskKey] = total;
         statusEl.className = 'upload-status';
-        statusEl.textContent = `✓ ${d.inserted} contacts saved${d.skipped ? ', ' + d.skipped + ' duplicates skipped' : ''}`;
+        statusEl.textContent = `✓ ${d.inserted} contacts saved${d.skipped ? ', ' + d.skipped + ' duplicates skipped' : ''}. Refreshing…`;
+        setTimeout(() => location.reload(), 1200);
         checkMismatch(taskKey);
       }
       fileInput.value = '';
